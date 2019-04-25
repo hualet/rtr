@@ -4,13 +4,13 @@ use std::net::{IpAddr, Ipv4Addr};
 use std::time::Duration;
 
 use pnet::util::checksum;
-use pnet::packet::Packet;
-use pnet::transport::{transport_channel, icmp_packet_iter};
-use pnet::transport::TransportChannelType::Layer4;
 use pnet::transport::TransportProtocol::Ipv4;
+use pnet::transport::TransportChannelType::Layer4;
+use pnet::transport::{transport_channel, icmp_packet_iter};
 
+use pnet::packet::Packet;
+use pnet::packet::icmp::IcmpTypes;
 use pnet::packet::ip::IpNextHeaderProtocols;
-use pnet::packet::icmp::{IcmpPacket, IcmpTypes};
 use pnet::packet::icmp::echo_request::{MutableEchoRequestPacket, IcmpCodes};
 
 fn create_ping_packet<'a>(sequence_number: u16) -> MutableEchoRequestPacket<'a> {
@@ -20,7 +20,7 @@ fn create_ping_packet<'a>(sequence_number: u16) -> MutableEchoRequestPacket<'a> 
     ping_packet.set_icmp_type(IcmpTypes::EchoRequest);
     ping_packet.set_icmp_code(IcmpCodes::NoCode);
     ping_packet.set_identifier(0);
-    ping_packet.set_sequence_number(0);
+    ping_packet.set_sequence_number(sequence_number);
     ping_packet.set_payload(b"Hello rust");
 
     let cksm = checksum(ping_packet.packet(), 1);
